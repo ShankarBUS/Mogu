@@ -2,21 +2,30 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-
     <Nullable>enable</Nullable>
+    <Version>0.1.0-alpha</Version>
+    <Authors>Yaegaki; ShankarBUS</Authors>
+    <Description>A library to inject a managed dll (.NET 5 based) from a managed process into any process and it provides functions to communicate between the two process</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ShankarBUS/Mogu</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ShankarBUS/Mogu</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>Managed Dll injection; .NET Core; .NET 5;</PackageTags>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\dll\MoguHost_x86.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\dll\MoguHost_x64.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\dll\MoguStore_x86.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\dll\MoguStore_x64.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\dll\nethost_x86.dll" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="..\dll\nethost_x64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\dll\MoguHost_x86.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\dll\MoguHost_x64.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\dll\MoguStore_x86.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\dll\MoguStore_x64.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\dll\nethost_x86.dll" CopyToOutputDirectory="Always" />
+    <None Include="..\dll\nethost_x64.dll" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="dnlib" Version="3.2.0" />
     <PackageReference Include="SharpDisasm" Version="1.1.11" />
   </ItemGroup>
+
 </Project>

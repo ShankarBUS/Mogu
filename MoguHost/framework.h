@@ -8,5 +8,5 @@
 #include <fstream>
 #include <thread>
 
-#include "coreclr_delegates.h"
-#include "hostfxr.h"
+#include "inc\coreclr_delegates.h"
+#include "inc\hostfxr.h"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -11,10 +12,10 @@ namespace Mogu.Sample
     {
         static async Task Main(string[] args)
         {
-            var proc = System.Diagnostics.Process.GetProcessesByName("notepad").First();
+            var proc = Process.Start("notepad.exe");
             var pid = (uint)proc.Id;
 
-            Console.WriteLine($"target pid:{pid:X}");
+            Debug.WriteLine($"target pid:{pid:X}");
             var injector = new Injector();
             using (var connection = await injector.InjectAsync(pid, c => EntryPoint(c)))
             {
@@ -23,11 +24,15 @@ namespace Mogu.Sample
                     byte[] buffer = new byte[1024];
                     var count = await connection.Pipe.ReadAsync(buffer, 0, buffer.Length, CancellationToken.None);
                     var str = Encoding.UTF8.GetString(buffer, 0, count);
-                    Console.WriteLine($"recv:{str}");
+                    Debug.WriteLine($"recv:{str}");
                 }
             }
+
+            MessageBox.Show("Process exited");
         }
+
         private static bool hooked;
+
         public static ValueTask EntryPoint(Connection connection)
         {
             connection.PreventAutoClose();

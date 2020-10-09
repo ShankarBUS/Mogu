@@ -6,9 +6,15 @@ namespace Mogu
 
         public readonly int InjectDllTimeOut;
 
-        public InjectorOption(int injectDllTimeOut)  
+        public readonly string PreferredClientPipeName;
+
+        public readonly string PreferredServerPipeName;
+
+        public InjectorOption(int injectDllTimeOut, string preferredClientPipeName = null, string preferredServerPipeName = null)  
         {
-            this.InjectDllTimeOut = injectDllTimeOut;
+            InjectDllTimeOut = injectDllTimeOut;
+            PreferredClientPipeName = preferredClientPipeName;
+            PreferredServerPipeName = preferredServerPipeName;
         }
     }
 }

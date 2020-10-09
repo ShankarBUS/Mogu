@@ -11,10 +11,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Background="AliceBlue">
+        <StackPanel Background="Red">
             <TextBlock x:Name="textBlock"></TextBlock>
             <TextBox x:Name="textBox"></TextBox>
-            <Button Click="Button_Click">send</Button>
+            <Button Click="Button_Click">Send Text</Button>
         </StackPanel>
         <TextBox Grid.Row="1" x:Name="logText" AcceptsReturn="True"></TextBox>
     </Grid>

@@ -65,7 +65,11 @@ namespace Mogu
             var typeName = declaringType.FullName;
             var methodName = entryPoint.Name;
 
-
+            var writer = File.CreateText("Mogu.tmpconfig");
+            writer.Write(GetRuntimeConfigPath(assemblyLocation));
+            writer.Flush();
+            writer.Close();
+            
             var process = NativeFunctions.OpenProcess(NativeFunctions.Consts.PROCESS_ALL_ACCESS, false, pid);
             if (process == IntPtr.Zero)
             {
@@ -78,8 +82,11 @@ namespace Mogu
                 throw new MoguException($"Can not get 'LoadLibraryW' address");
             }
 
-            var pipeName = $"MoguPipe-{Guid.NewGuid()}";
-            var pipe = new NamedPipeServerStream(pipeName, PipeDirection.InOut);
+            string serverPipeName = string.IsNullOrEmpty(option.PreferredServerPipeName) ? $"MoguPipe-{Guid.NewGuid()}" : option.PreferredServerPipeName;
+
+            string clientPipeName = string.IsNullOrEmpty(option.PreferredClientPipeName) ? serverPipeName : option.PreferredClientPipeName;
+
+            var pipe = new NamedPipeServerStream(serverPipeName, PipeDirection.InOut);
             try
             {
                 var (nethostDllPath, moguhostDllPath) = GetNativeDllPath(process, assemblyLocation);
@@ -93,7 +100,7 @@ namespace Mogu
                     accessor.Write(position, assemblyLocation, out position);
                     accessor.Write(position, typeName, out position);
                     accessor.Write(position, methodName, out position);
-                    accessor.Write(position, pipeName, out position);
+                    accessor.Write(position, clientPipeName, out position);
 
 
                     if (!(await InjectNativeDllAsync(process, nethostDllPath, loadLibraryW, false)))
@@ -217,5 +224,10 @@ namespace Mogu
 
         private static string GetMemoryMappedFileName(uint pid)
             => $"MoguMemoryMappedFile-{pid}";
+
+        private static string GetRuntimeConfigPath(string assemblyLocation)
+        {
+            return Path.GetFileNameWithoutExtension(assemblyLocation) + ".runtimeconfig.json";
+        }
     }
 }

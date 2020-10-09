@@ -52,7 +52,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 DWORD WINAPI init(LPVOID lpParameter)
 {
 	const auto hModule = static_cast<HMODULE>(lpParameter);
-	
+
 	const auto entrypoint = get_entrypoint(hModule);
 	if (entrypoint == nullptr)
 	{
@@ -114,6 +114,7 @@ entrypoint_fn get_entrypoint(HMODULE hModule)
 	string_t mogu_native_dll_path = path_buffer;
 	const auto mogu_directory = get_directory_path(mogu_native_dll_path);
 	const auto mogu_managed_dll_path = mogu_directory + L"\\Mogu.dll";
+	const auto mogu_tmp_config_path = mogu_directory + L"\\Mogu.tmpconfig";
 
 #if defined(_WIN64)
 	const auto mogu_store_name = L"MoguStore_x64.dll";
@@ -122,6 +123,22 @@ entrypoint_fn get_entrypoint(HMODULE hModule)
 	const auto mogu_store_name = L"MoguStore_x86.dll";
 	const auto nethost_name = L"nethost_x86.dll";
 #endif
+
+	std::wstring tmpconfig;
+	std::wifstream ifs;
+	ifs.open(mogu_tmp_config_path, std::ios_base::in);
+	ifs >> tmpconfig;
+	ifs.close();
+
+	if (tmpconfig.c_str() == NULL)
+	{
+		FreeLibraryAndExitThread(hModule, 0);
+		return nullptr;
+	}
+
+	std::cout << tmpconfig.c_str() << std::endl;
+
+	const auto runtimeconfig_path = mogu_directory + L"\\" + tmpconfig.c_str();
 
 	const auto mogu_store_path = mogu_directory + L"\\" + mogu_store_name;
 	const auto nethost_path = mogu_directory + L"\\" + nethost_name;
@@ -141,7 +158,6 @@ entrypoint_fn get_entrypoint(HMODULE hModule)
 		return reinterpret_cast<entrypoint_fn>(cached);
 	}
 
-
 	const auto nethost_lib = LoadLibraryW(nethost_path.c_str());
 	if (nethost_lib == nullptr)
 	{
@@ -160,12 +176,6 @@ entrypoint_fn get_entrypoint(HMODULE hModule)
 	{
 		return nullptr;
 	}
-
-	// for example, fxr_path is 'DOTNET_ROOT/host/3.0.0/hostfxr.dll'.
-	// get framework version from fxr_path(3.0.0);
-	const auto version = get_file_name(get_directory_path(path_buffer));
-	const auto runtimeconfig_path = create_temporary_runtimeconfig_json(version);
-
 
 	// get proc address from hostfxr.dll
 	auto hostfxr_init = (hostfxr_initialize_for_runtime_config_fn)GetProcAddress(hostfxr_lib, "hostfxr_initialize_for_runtime_config");
